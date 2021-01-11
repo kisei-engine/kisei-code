@@ -1,0 +1,26 @@
+@startuml
+
+interface "Event" as event
+
+[Rule Engine] as re
+[Scheduling Engine] as se
+[Router] as router
+database db as db
+actor "Business Analyst" as ba
+queue "Incoming Event Bus" as ieb
+queue "Outgoing Event bus" as oeb
+
+re ..> oeb : event
+se ..> oeb : event
+
+db -> re
+re ..> se : schedule
+
+event -> ieb
+ieb -> re
+ba -> db : manage
+
+oeb ..> router
+router ..> event
+
+@enduml
