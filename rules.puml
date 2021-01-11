@@ -1,0 +1,66 @@
+@startuml
+digraph foo {
+  node [style=rounded]
+  Traveler [shape=box]
+  overseas 
+  australia
+  passive_mode_1 [label="Passive Mode 1", shape=box]
+  passive_mode_2 [label="Passive Mode 2", shape=box]
+  passive_mode_3 [label="Passive Mode 3", shape=box]
+  inflight
+  on_arrival
+  after_arrival
+  active_mode_q [label="Active Mode Q"]
+  post_arrival [label="Post arrival"]
+  not_quarantined_or_self_isolation
+  pre_travel
+  obtain_pre_travel_requirements [label="Pre Travel Requirements"]
+  message_traveler [label="Message traveler"]
+  message_travel_agent [label="Message travel agent"]
+  message_health_agency [label="Message Health Agency"]
+  health_record_flag_red [label="Health Record Flag = RED", shape="box", color="red"]
+  health_record_flag_green [label="Health Record Flag = GREEN", shape="box", color="green"]
+  Quarantine
+  Self_isolation [label="Self Isolation"]
+  obtain_isolation_address [label="Get self-isolation address"]
+  address_fail_check [label="Address check fail"]
+  address_pass_check [label="Address check pass"]
+
+  Traveler -> overseas [label=location]
+  Traveler -> pre_travel
+  pre_travel -> obtain_pre_travel_requirements
+  obtain_pre_travel_requirements -> message_traveler [label="Required"]
+  obtain_pre_travel_requirements -> message_travel_agent [label="If exists"]
+  obtain_pre_travel_requirements -> health_record_flag_red [label="no health record"]
+  obtain_pre_travel_requirements -> health_record_flag_green [label="all requirements met"]
+  obtain_pre_travel_requirements -> health_record_flag_red [label="positive test"]
+  overseas -> passive_mode_1
+  overseas -> passive_mode_2 [label="10 days from departure"]
+  overseas -> passive_mode_3 [label="Post departure time"]
+  passive_mode_3 -> inflight
+  passive_mode_3 -> after_arrival
+  inflight -> on_arrival
+  on_arrival -> passive_mode_3
+  on_arrival -> after_arrival
+  on_arrival -> australia
+  on_arrival -> Self_isolation [label="required"]
+  Self_isolation -> message_health_agency
+  Self_isolation -> obtain_isolation_address
+  obtain_isolation_address -> address_fail_check
+  address_fail_check -> health_record_flag_red 
+  address_fail_check -> message_traveler 
+  address_fail_check -> message_health_agency 
+  obtain_isolation_address -> address_pass_check
+  address_pass_check -> health_record_flag_green
+  on_arrival -> Quarantine [label="required"]
+  Quarantine -> message_travel_agent [label="if exists"]
+  after_arrival -> passive_mode_2
+  Traveler -> active_mode_q [label="Quarantine"]
+  Traveler -> active_mode_q [label="Self Isolation"]
+  after_arrival -> post_arrival [label="28 days"]
+  Traveler -> not_quarantined_or_self_isolation
+  not_quarantined_or_self_isolation -> post_arrival
+  post_arrival -> passive_mode_1
+  Traveler -> australia [label=location]
+}
+@enduml
